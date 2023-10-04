@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+</head>
+<body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+     body {
+        background: url('https://media.tenor.com/Qsxpa4KCZgcAAAAd/autumn-leaves-falling.gif') no-repeat center center fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        overflow: hidden;
+    }
+
+    body, h1, button {
+        margin: 0;
+        padding: 0;
+    }
+
+   
+    .container {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .button-container {
+        display: flex;
+    }
+    
+    .timer {
+        text-align: center;
+        margin-top: 50px;
+    }
+
+    button {
+        background-color: #3498db;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 22px;
+        background-color: lightgreen;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        animation: rainbow 6s linear infinite;   /* Apply the rainbow animation */ 
+    }
+
+    button:hover {
+        background-color: #2980b9;
+    }
+
+    /* Style for the Start button */
+    #start-button.active {
+        background-color: #27ae60;
+    }
+
+    /* Style for the Stop button */
+    #stop-button.active {
+        background-color: #e74c3c;
+    }
+
+    /* Style for the Reset button */
+    #reset-button.active {
+        background-color: #f39c12;
+    }
+
+    /* Style the timer display */
+    #timer-display {
+        font-size: 75px;
+        font-weight: bold;
+        color: #333;
+        background-color: rgba(255, 255, 255, 0.7);
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: inline-block;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        animation: none;
+    }
+
+    /* Style for the current day info */
+    #current-day-info {
+        font-size: 20px;
+        color: #fff;
+        margin-top: 20px;
+    }
+    
+    /* Adjust button styles for a more compact look on smaller screens */
+    @media (max-width: 600px) {
+        button {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        #timer-display {
+            font-size: 24px;
+            padding: 8px 16px;
+        }
+    }
+
+    /* Define a rainbow animation */
+    @keyframes rainbow {
+        0%  {background-color: red;}  /* Red */
+        14% {background-color: orange;} /* Orange */
+        18% {background-color: aqua;} /* Aqua */
+        28% {background-color: yellow;} /* Yellow */
+        42% {background-color: lawngreen;} /* Green */
+        57% {background-color: blue;} /* Blue */
+        71% {background-color: #6600FF;} /* Purple */
+        85% {background-color: #FF00FF;} /* Pink */
+        100% {background-color: #FF0000;} /* Back to Red */
+    }
+</style>
+
+   <div class="container">
+    <div class="timer">
+        <h1 id="timer-display">00:00:00</h1>
+        <p id="current-day-info">Today is Wednesday, October 4, 2023</p>
+    </div>
+    <div class="button-container">
+    <button id="start-button">Start</button>
+    <button id="stop-button">Stop</button>
+    <button id="reset-button">Reset</button>
+    </div>
+   </div>     
+<script>
+    // References to the timer display and buttons
+const timerDisplay = document.getElementById('timer-display');
+const startButton = document.getElementById('start-button');
+const stopButton = document.getElementById('stop-button');
+const resetButton = document.getElementById('reset-button');
+
+let startTime; // To store the start time
+let intervalId; // To store the interval ID for updating the timer
+
+startButton.addEventListener('click', () => {
+    if (!isActive) {
+        startTimer();
+        isActive = true;
+        toggleActiveClass(startButton); // Apply the active style with a delay
+    }
+});
+stopButton.addEventListener('click', () => {
+    if (isActive) {
+        stopTimer();
+        isActive = false;
+        toggleActiveClass(startButton); // Remove the active style with a delay
+    }
+});
+resetButton.addEventListener('click', () => {
+    resetTimer();
+    isActive = false;
+    toggleActiveClass(startButton); // Remove the active style with a delay
+});
+
+let isActive = false; // To track if the timer is active
+
+// Function to toggle the "active" class with a delay
+
+
+// Function to update the current day info
+function updateDayInfo() {
+    const currentDay = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+    const formatedDayInfo = currentDay.toLocaleDateString('en-US', options);
+    document.getElementById('current-day-info').textContent = `Today is ${formattedDayInfo}`;
+}
+
+// Initial update
+updateDayInfo();
+
+// Update the day info every minute (adjust the interval as needed)
+setInterval(updateDayInfo, 60000); // 60000 milliseconds = 1 minute
+
+function toggleActiveClass(button) {
+    setTimeout(() => {
+        button.classList.toggle('active');
+    }, 10); // Adjust the delay as needed
+}
+
+function startTimer() {
+    startTime = Date.now();
+    intervalId = setInterval(updateTimer, 1000); // Update Timer Every 1 second (1000 milli seconds)
+    
+}
+
+function resetTimer() {
+    if (intervalId) {
+        clearInterval(intervalId);
+    }
+    timerDisplay.textContent = '00:00:00';
+}
+
+function stopTimer() {
+    if (intervalId) {
+        clearInterval(intervalId)
+    }
+}
+
+
+function updateTimer() {
+    const currentTime = Date.now();
+    const elapsedTime = new Date(currentTime - startTime);
+
+    // Format the elapsed time as HH:MM:SS
+    const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
+    const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
+
+    timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+
+}
+</script>
+</body>
+</html>
